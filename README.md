@@ -25,9 +25,18 @@ project3_model_risk/
 ├── LLM_PROMPTS.md
 ├── requirements.txt
 ├── src/market_risk/var_backtests.py   # IMPLEMENTED: Kupiec, Christoffersen, Basel traffic light
-├── src/market_risk/var_models.py      # TODO: historical/parametric/GARCH/EVT VaR + ES
+├── src/market_risk/var_models.py      # IMPLEMENTED: historical/parametric/EWMA/GARCH-FHS/EVT VaR + ES
+├── src/market_risk/es_backtests.py    # IMPLEMENTED: Acerbi-Szekely Z2 + ES traffic light
 ├── src/credit_risk/woe_scorecard.py   # IMPLEMENTED: WOE/IV + monotonic binning + scorecard scaling
-├── src/credit_risk/challenger.py      # TODO: monotone-constrained XGBoost/LightGBM
-├── src/credit_risk/validation.py      # TODO: AUC/KS/Gini, calibration, PSI, SHAP, fairness
-└── reports/validation_report.md       # TODO: SR 11-7-style write-up
+├── src/credit_risk/challenger.py      # IMPLEMENTED: monotone-constrained XGBoost + cost of monotonicity
+├── src/credit_risk/validation.py      # IMPLEMENTED: AUC/KS/Gini, calibration, PSI/CSI, SHAP, fairness
+├── src/credit_risk/data.py            # IMPLEMENTED: synthetic + CSV/OpenML credit loaders
+└── reports/validation_report.md       # IMPLEMENTED: SR 11-7 validation report (illustrative numbers)
 ```
+
+## Status
+All modules implemented with tests (no network/GPU in unit tests; SHAP mocked). The SR 11-7 report in
+`reports/validation_report.md` is populated with **real outputs on synthetic data** — e.g. challenger AUC
+0.889, cost of monotonicity ≈ 0, all five VaR methods in the Basel green zone, and a disclosed fairness
+finding (adverse-impact ratio 0.589, fails four-fifths via an income proxy). Swap in free real data
+(Home Credit / Give-Me-Some-Credit; yfinance + FRED) to regenerate.
