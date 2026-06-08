@@ -1,0 +1,34 @@
+[project]
+name = "model-risk-platform"
+version = "0.1.0"
+description = "Market-risk VaR/ES engine and credit-risk PD validation, SR 11-7 / Basel-aligned"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 110
+target-version = "py312"
+src = ["src", "tests", "shared"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "C4", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+warn_unused_ignores = false
+no_implicit_optional = true
+files = ["src"]
+
+# shared/ is a vendored reference toolkit validated separately; don't deep type-check it.
+[[tool.mypy.overrides]]
+module = "shared.*"
+follow_imports = "skip"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning"]
