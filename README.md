@@ -1,5 +1,13 @@
 # Project 3 — Model-Risk & Validation Platform (RANK #2)
 
+> **Result (real UCI German Credit).** Monotone-constrained XGBoost challenger AUC **0.812** beats the logistic
+> champion (0.796); the **cost of monotonicity is ≈ 0** (−0.014 AUC — the constraint actually helps); scores are
+> stable (PSI 0.04); and a disparate-impact test flags **younger applicants (adverse-impact ratio 0.665, fails
+> the four-fifths rule)**. Market-risk VaR/ES engine: all five methods in the Basel green zone with ES backtests
+> passing (on simulated returns). Full SR 11-7 write-up in [`reports/validation_report.md`](reports/validation_report.md).
+
+![Credit validation — calibration and top drivers](assets/credit_validation.png)
+
 **Thesis.** One validation discipline applied to two model classes, the way a real Model Risk Management group
 works: (A) a **market-risk** VaR/Expected-Shortfall engine with the full regulatory backtesting suite, and
 (B) a **credit-risk** PD model built the regulated way — WOE/IV scorecard (champion) vs monotonic-constrained
