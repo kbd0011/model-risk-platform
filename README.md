@@ -48,3 +48,13 @@ All modules implemented with tests (no network/GPU in unit tests; SHAP mocked). 
 0.889, cost of monotonicity ≈ 0, all five VaR methods in the Basel green zone, and a disclosed fairness
 finding (adverse-impact ratio 0.589, fails four-fifths via an income proxy). Swap in free real data
 (Home Credit / Give-Me-Some-Credit; yfinance + FRED) to regenerate.
+
+## References
+- Board of Governors of the Federal Reserve / OCC (2011). *SR 11-7 — Guidance on Model Risk Management.*
+- Basel Committee on Banking Supervision (1996). *Supervisory Framework for the Use of "Backtesting".*
+- BCBS — *Fundamental Review of the Trading Book (FRTB)*, stressed Expected Shortfall.
+- Kupiec, P. (1995). *Techniques for Verifying the Accuracy of Risk Measurement Models.* J. Derivatives.
+- Christoffersen, P. (1998). *Evaluating Interval Forecasts.* International Economic Review.
+- Acerbi, C. & Székely, B. (2014). *Backtesting Expected Shortfall.* Risk.
+- McNeil, Frey & Embrechts. *Quantitative Risk Management* (EVT / peaks-over-threshold).
+- Data: [UCI German Credit](https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data) via OpenML.
