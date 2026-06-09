@@ -1,4 +1,8 @@
-# Project 3 — Model-Risk & Validation Platform (RANK #2)
+# Model-Risk & Validation Platform
+
+[![CI](https://github.com/kbd0011/model-risk-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/kbd0011/model-risk-platform/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
 
 > **Result (real UCI German Credit).** Monotone-constrained XGBoost challenger AUC **0.812** beats the logistic
 > champion (0.796); the **cost of monotonicity is ≈ 0** (−0.014 AUC — the constraint actually helps); scores are
@@ -25,6 +29,23 @@ trading projects. Together with Project 4 it covers all five lanes.
 > XGBoost challenger, with the *cost of monotonicity* quantified, PSI stability, calibration curves, SHAP, and a
 > disparate-impact fairness section. Full validation report following SR 11-7 (effective challenge, limitations)."
 
+## Pipeline
+```mermaid
+flowchart LR
+  subgraph MarketRisk
+    R["Returns"] --> V["VaR/ES<br/>hist · EWMA · GARCH-FHS · EVT"]
+    V --> BT["Backtests<br/>Kupiec · Christoffersen · Basel · Acerbi-Szekely"]
+  end
+  subgraph CreditRisk
+    D["Credit data<br/>(German Credit)"] --> CH["Champion<br/>WOE scorecard"]
+    D --> XG["Challenger<br/>monotone XGBoost"]
+    CH --> VAL["Validation<br/>AUC/KS · calibration · PSI · SHAP · fairness"]
+    XG --> VAL
+  end
+  BT --> REP["SR 11-7 validation report"]
+  VAL --> REP
+```
+
 ## Layout
 ```
 project3_model_risk/
@@ -48,6 +69,21 @@ All modules implemented with tests (no network/GPU in unit tests; SHAP mocked). 
 0.889, cost of monotonicity ≈ 0, all five VaR methods in the Basel green zone, and a disclosed fairness
 finding (adverse-impact ratio 0.589, fails four-fifths via an income proxy). Swap in free real data
 (Home Credit / Give-Me-Some-Credit; yfinance + FRED) to regenerate.
+
+## Reproduce
+```bash
+make setup && make check   # install, then lint + typecheck + test (CI parity)
+make run                   # real UCI German Credit validation -> numbers + assets/credit_validation.png
+```
+
+## Design decisions, limitations & what's next
+- **Champion + challenger, not one model.** The interpretable WOE scorecard is the regulator-facing champion;
+  the monotone XGBoost challenger must beat it *and stay monotone* to earn deployment — and the cost of that
+  monotonicity is quantified, not assumed.
+- **Honest fairness finding.** The disparate-impact test is reported even though it fails four-fifths (an age
+  proxy): effective challenge means surfacing problems, not burying them.
+- **What I'd do next:** scale to Home Credit / Give-Me-Some-Credit; add LGD/EAD and reject inference; a
+  fairness-constrained challenger; live VaR/ES on a real multi-asset book rather than simulated returns.
 
 ## References
 - Board of Governors of the Federal Reserve / OCC (2011). *SR 11-7 — Guidance on Model Risk Management.*
