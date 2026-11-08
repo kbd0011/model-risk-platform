@@ -1,15 +1,23 @@
-# Data — Project 3 (FREE)
+# Data
 
-## Credit risk (pick 1–2)
-- **Home Credit Default Risk** (Kaggle): large, realistic, multi-table; the strongest single dataset.
-- **Lending Club** loan data (Kaggle mirrors): big, rich features; watch label leakage from post-origination fields.
-- **Give Me Some Credit** (Kaggle): classic, compact PD task.
-- **German Credit** / **Default of Credit Card Clients** (UCI): small, fast, good for unit tests and fairness demos.
+## Used in this repo
+- **Credit:** [UCI German Credit](https://archive.ics.uci.edu/dataset/144/statlog+german+credit+data)
+  (OpenML `credit-g`, 1,000 loans, 30% bad rate), fetched at run time by `scripts/run_german_credit.py`. No
+  data is committed.
+- **Market:** the unit tests simulate returns with known properties (normal, Student-t(3), time-varying
+  volatility) so each VaR/ES model and backtest can be checked against a known answer.
+- **Synthetic credit:** `make_synthetic_credit` in `src/credit_risk/data.py` generates a monotone PD dataset
+  with a protected attribute, used for offline tests.
 
-## Market risk
-- **Free price series** for portfolio VaR: yfinance / Stooq (equities, ETFs, FX), **FRED** for rates and macro.
-- Build a small multi-asset portfolio; compute daily P&L; backtest VaR/ES on a rolling window.
+## Candidates for scaling up
+- **Home Credit Default Risk** (Kaggle): large, multi-table.
+- **Lending Club** loan data (Kaggle mirrors): rich features; screen out post-origination fields to avoid
+  label leakage.
+- **Give Me Some Credit** (Kaggle): compact PD task.
+- **Market data:** yfinance / Stooq price series and FRED rates for a small multi-asset portfolio, with daily
+  P&L backtested on a rolling window.
 
 ## Fairness data caveat
-- Protected attributes (e.g., age in German Credit) are limited and dataset-specific. Document exactly which
-  attribute you use and that conclusions are illustrative, not a compliance certification.
+Protected attributes in public credit data are limited and dataset-specific. German Credit's age is used here;
+its `personal_status` field combines sex and marital status. Conclusions are model findings, not a compliance
+certification.

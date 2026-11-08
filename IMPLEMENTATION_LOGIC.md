@@ -1,36 +1,38 @@
-# Implementation Logic — Project 3 (Model Risk & Validation)
+# Implementation Logic — Model Risk & Validation
 
 ## A. Market risk
-- **VaR models** (`var_models.py`, TODO): historical simulation, parametric (variance-covariance), EWMA,
-  GARCH(1,1) filtered historical simulation, and an EVT (POT/GPD) tail model. Compute 1-day VaR at 99% and 97.5%.
-- **Expected Shortfall**: report ES at 97.5% (the FRTB measure). Note FRTB replaced VaR with stressed ES; verify
-  current regulatory timelines before citing dates (US phased 2025→2028; EU & UK delayed to Jan 1, 2027).
-- **Backtesting** (`var_backtests.py`, IMPLEMENTED): Kupiec POF (unconditional coverage), Christoffersen
-  independence + conditional coverage, and the Basel traffic-light three-zone test on a 250-day exception count.
-  Add ES backtests (Acerbi-Szekely) via prompt.
+- **VaR/ES models** (`var_models.py`): historical simulation, parametric (variance-covariance), RiskMetrics
+  EWMA, GARCH(1,1) filtered historical simulation, and an EVT peaks-over-threshold (Generalized Pareto) tail
+  model. Rolling 1-day forecasts at any confidence level; the forecast for day *t* uses returns through *t−1*
+  only.
+- **Expected Shortfall**: available at any confidence; 97.5% is the FRTB level, since FRTB moves the
+  internal-models measure from VaR to stressed ES.
+- **VaR backtesting** (`var_backtests.py`): Kupiec POF (unconditional coverage), Christoffersen independence and
+  conditional coverage, and the Basel three-zone traffic light on the 250-day exception count.
+- **ES backtesting** (`es_backtests.py`): Acerbi-Szekely Test 2 (Z2) with a Monte-Carlo p-value and a
+  p-value-based ES traffic light.
 
 ## B. Credit risk
-- **Champion** (`woe_scorecard.py`, IMPLEMENTED core): WOE/IV binning + logistic-regression scorecard with PDO
-  point scaling — the interpretable, regulator-friendly standard.
-- **Challenger** (`challenger.py`, TODO): monotone-constrained XGBoost/LightGBM; quantify the **cost of
-  monotonicity** (AUC delta vs unconstrained) — a real 2025 research question.
-- **Validation** (`validation.py`, TODO): discrimination (AUC, KS, Gini), calibration (reliability curve,
-  Brier), stability (PSI/CSI across time or train/OOT), SHAP explanations, and **fairness** (disparate impact /
-  adverse-impact ratio across protected groups where available).
+- **Scorecard** (`woe_scorecard.py`): WOE/IV binning, monotonic bin merging and points-to-double-odds scaling,
+  the interpretable form regulators know. In the German Credit run (`scripts/run_german_credit.py`) the
+  champion is a logistic regression on standardized one-hot features; wiring the WOE scorecard in is a next
+  step.
+- **Challenger** (`challenger.py`): monotone-constrained XGBoost with directions inferred from each feature's
+  rank correlation with default, and the **cost of monotonicity** (AUC of the unconstrained model minus the
+  constrained one).
+- **Validation** (`validation.py`): discrimination (AUC, KS, Gini), calibration (reliability table, Brier),
+  stability (PSI/CSI), mean |SHAP| importance, and fairness (adverse-impact ratio and the four-fifths test
+  across a protected attribute).
 
-## C. The validation report (the differentiator)
-Write `reports/validation_report.md` in the structure SR 11-7 expects: purpose & scope; data quality;
-conceptual soundness; outcome analysis / backtesting; benchmarking (champion vs challenger); stability;
-limitations & assumptions; **effective challenge**; conclusion & conditions of use. This document is what makes
-the project read as model-risk competence rather than "another XGBoost notebook".
+## C. The validation report
+`reports/validation_report.md` follows the structure SR 11-7 sets out for validation (SR 11-7 is now
+superseded by SR 26-2, April 17, 2026): purpose and scope; data quality; conceptual soundness; outcome
+analysis and backtesting; benchmarking (champion vs challenger); stability; fairness; limitations and
+assumptions; critical review of key results; conclusion and recommendations.
 
-## Pitfalls
-- Backtesting VaR on too short a window; ignoring exception *clustering* (use Christoffersen, not just Kupiec).
-- A boosted model that violates business monotonicity (income up -> risk down); hence the monotone challenger.
-- Reporting AUC only; regulators care about calibration and stability too.
-- Fairness claims without a documented protected attribute and methodology; state data limitations.
-
-## Per-lane positioning
-- **Risk / Model Validation**: the whole project is the pitch — effective challenge, regulatory backtests, docs.
-- **Strats / sell-side quant**: the VaR/ES engine + FRTB framing.
-- **DS/MLE**: the credit pipeline, monotonic constraints, SHAP, fairness, MLOps.
+## Pitfalls the design guards against
+- Backtesting VaR on too short a window, or ignoring exception *clustering* (hence Christoffersen alongside
+  Kupiec).
+- A boosted model that violates business monotonicity (e.g. income up, risk up); hence the monotone challenger.
+- Reporting AUC alone; calibration and stability matter as much.
+- Fairness claims without a documented protected attribute and method; the report states both.
